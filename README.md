@@ -2,55 +2,55 @@
 
 ## Overview
 
-This repository contains a Python-based Proof of Concept (PoC) developed for **CPDS 2025 – PDS 70: Single Module Radar and Radar Signal Processor Cards**.
+This repository contains a Python-based Proof of Concept (PoC) developed for **CPDS 2025 – PDS 70**.
 
-The project demonstrates the fundamental radar signal processing chain, including waveform generation, target echo simulation, pulse compression, Range-Doppler processing, and target detection using CFAR techniques. It serves as a lightweight framework for evaluating radar signal processing concepts and validating detection performance in a simulated environment.
+The project implements a simplified radar digital signal processing (DSP) chain, demonstrating key radar processing stages including waveform generation, echo simulation, pulse compression, Range-Doppler processing, and target detection using CA-CFAR.
 
----
-
-## Objectives
-
-* Generate radar transmission waveforms.
-* Simulate target echoes with configurable range and velocity.
-* Perform pulse compression using matched filtering.
-* Generate Range-Doppler maps through FFT-based processing.
-* Detect targets using CA-CFAR algorithms.
-* Automatically generate visualizations and performance reports.
+The implementation simulates a single moving target and generates plots and a PDF report to visualize processing results.
 
 ---
 
 ## Features
 
-### Waveform Generation
+* Complex baseband LFM (Linear Frequency Modulated) chirp generation
+* Single-target echo simulation
+* Range delay modelling based on target distance
+* Doppler shift simulation based on target velocity
+* Additive White Gaussian Noise (AWGN) channel model
+* Pulse compression using matched filtering
+* Range-Doppler processing using 2D FFT
+* 1D Cell Averaging CFAR (CA-CFAR) detection
+* Automatic plot generation
+* PDF report generation
 
-* Linear Frequency Modulated (LFM) chirp generation.
-* Configurable bandwidth, pulse duration, and sampling parameters.
+---
 
-### Echo Simulation
+## Radar Processing Chain
 
-* Range-delay modelling.
-* Doppler frequency shift simulation.
-* Support for configurable target parameters.
-
-### Pulse Compression
-
-* Matched filtering implementation.
-* Improved range resolution through pulse compression.
-
-### Range-Doppler Processing
-
-* Two-dimensional FFT processing.
-* Generation of Range-Doppler maps for target analysis.
-
-### Target Detection
-
-* Cell Averaging Constant False Alarm Rate (CA-CFAR).
-* Automatic threshold estimation and target extraction.
-
-### Automated Reporting
-
-* Plot generation and storage.
-* PDF report generation summarizing results and detections.
+```text
+LFM Chirp Generation
+          │
+          ▼
+Echo Simulation
+(Range Delay + Doppler + Noise)
+          │
+          ▼
+Matched Filtering
+(Pulse Compression)
+          │
+          ▼
+Range Profile Generation
+          │
+          ▼
+CA-CFAR Detection
+          │
+          ▼
+Range-Doppler Processing
+(2D FFT)
+          │
+          ▼
+Plots & PDF Report
+```
 
 ---
 
@@ -59,18 +59,19 @@ The project demonstrates the fundamental radar signal processing chain, includin
 ```text
 PDS70-Radar-Signal-Processor/
 │
-├── src/
-│   ├── waveform.py
-│   ├── simulator.py
-│   ├── processing.py
-│   ├── cfar.py
-│   └── evaluate.py
+├── waveform.py              # LFM waveform generation
+├── channel_sim.py           # Echo simulation
+├── matched_filter.py        # Pulse compression
+├── range_doppler.py         # Range-Doppler processing
+├── cfar.py                  # CA-CFAR detection
+├── report_generator.py      # PDF report generation
+├── evaluate.py              # End-to-end evaluation pipeline
+├── requirements.txt
 │
 ├── results/
 │   ├── plots/
 │   └── report.pdf
 │
-├── requirements.txt
 └── README.md
 ```
 
@@ -85,7 +86,7 @@ git clone <repository-url>
 cd PDS70-Radar-Signal-Processor
 ```
 
-Install required dependencies:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -93,45 +94,64 @@ pip install -r requirements.txt
 
 ---
 
-## Running the Evaluation
+## Running the Project
 
-Execute the complete radar signal processing pipeline:
+Execute the complete radar DSP pipeline:
 
 ```bash
-python src/evaluate.py
+python evaluate.py
 ```
 
-The script will:
+The script performs:
 
-1. Generate an LFM chirp waveform.
-2. Simulate radar target echoes.
-3. Apply matched filtering for pulse compression.
-4. Perform Range-Doppler processing.
-5. Execute CA-CFAR detection.
-6. Save plots and generate a PDF report.
+1. LFM waveform generation
+2. Echo simulation
+3. Pulse compression
+4. Range profile generation
+5. CA-CFAR detection
+6. Range-Doppler processing
+7. Plot generation
+8. PDF report creation
 
 ---
 
-## Output
+## Simulation Parameters
+
+Default simulation parameters:
+
+| Parameter         | Value  |
+| ----------------- | ------ |
+| Sampling Rate     | 5 MHz  |
+| Pulse Width       | 40 µs  |
+| Bandwidth         | 2 MHz  |
+| PRF               | 2 kHz  |
+| Carrier Frequency | 10 GHz |
+| Number of Pulses  | 64     |
+| Target Range      | 4500 m |
+| Target Velocity   | 30 m/s |
+| SNR               | 5 dB   |
+
+These values can be modified directly in `evaluate.py`.
+
+---
+
+## Outputs
 
 ### Generated Plots
 
-Saved under:
+Saved in:
 
 ```text
 results/plots/
 ```
 
-Examples include:
+Generated visualizations include:
 
-* Transmitted waveform
-* Received echo signal
-* Pulse compression output
-* Range profile
+* Transmit LFM waveform
+* Range profile with CA-CFAR detections
 * Range-Doppler map
-* CFAR detection results
 
-### Evaluation Report
+### PDF Report
 
 Generated automatically at:
 
@@ -141,33 +161,32 @@ results/report.pdf
 
 The report contains:
 
-* Processing parameters
+* Simulation parameters
+* Processing summary
+* Generated plots
 * Detection results
-* Performance visualizations
-* Summary of observations
 
 ---
 
-## Radar Processing Pipeline
+## Example Processing Flow
 
 ```text
-LFM Chirp Generation
-          ↓
+Target Parameters
+        │
+        ▼
 Echo Simulation
-(Range + Doppler)
-          ↓
-Matched Filtering
-(Pulse Compression)
-          ↓
-Range Processing
-          ↓
-Doppler Processing
-          ↓
-Range-Doppler Map
-          ↓
-CA-CFAR Detection
-          ↓
-Results & Report Generation
+        │
+        ▼
+Pulse Compression
+        │
+        ▼
+Range Detection (CFAR)
+        │
+        ▼
+Range-Doppler Analysis
+        │
+        ▼
+Result Visualization
 ```
 
 ---
@@ -175,31 +194,31 @@ Results & Report Generation
 ## Applications
 
 * Radar signal processing education
-* Defense and aerospace research
-* Detection algorithm evaluation
-* Range-Doppler analysis studies
-* Prototype development for radar systems
+* DSP algorithm prototyping
+* Radar detection studies
+* Range-Doppler analysis demonstrations
+* CPDS 2025 project evaluation
 
 ---
 
 ## Future Enhancements
 
 * Multiple target simulation
-* Clutter and noise modelling
-* MTI/MTD processing
-* Advanced CFAR variants (GO-CFAR, SO-CFAR, OS-CFAR)
-* Tracking algorithms (Kalman Filter, JPDA)
-* Real-time processing support
-* Hardware-in-the-loop integration
+* Clutter modelling
+* Advanced CFAR algorithms
+* Target tracking algorithms
+* MIMO radar support
+* Real-time data processing
+* Hardware integration
 
 ---
 
 ## License
 
-This project is provided for educational, research, and proof-of-concept purposes.
+This project is intended for educational, research, and proof-of-concept purposes.
 
 ---
 
 ## Author
 
-Developed as part of **CPDS 2025 – PDS 70 Radar Signal Processor PoC**.
+Developed for **CPDS 2025 – PDS 70 Radar Signal Processor Proof of Concept**.
